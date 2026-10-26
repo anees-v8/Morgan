@@ -1,4 +1,5 @@
 import os
+import colorsys
 import cv2
 import numpy as np
 import textwrap
@@ -66,10 +67,26 @@ def draw_click_ripple(img_bgr: np.ndarray, x: int, y: int, progress: float, colo
         c2 = (int(255 * alpha * 0.8), int(255 * alpha * 0.8), int(255 * alpha * 0.8))
         cv2.circle(img_bgr, (x, y), int(r * 0.55), c2, 1, cv2.LINE_AA)
 
-def get_brand_palette(domain: str) -> Dict[str, Any]:
+def palette_from_accent(rgb: Tuple[int, int, int]) -> Dict[str, Any]:
+    """Studio lighting derived from the colour the site itself uses for its buttons."""
+    h, l, s = colorsys.rgb_to_hls(rgb[0] / 255.0, rgb[1] / 255.0, rgb[2] / 255.0)
+
+    def to255(c):
+        return tuple(int(round(max(0.0, min(1.0, v)) * 255)) for v in c)
+
+    accent = to255(colorsys.hls_to_rgb(h, min(0.66, max(0.54, l)), max(0.65, s)))      # vivid on dark UI
+    glow = to255(colorsys.hls_to_rgb(h, 0.22, min(0.75, max(0.45, s))))                 # deep tinted bloom
+    glow2 = to255(colorsys.hls_to_rgb((h + 0.08) % 1.0, 0.17, 0.5))                     # analogous fill
+    return {"glow": glow, "accent_rgb": accent, "accent_bgr": accent[::-1], "glow_secondary": glow2}
+
+
+def get_brand_palette(domain: str, accent_rgb: Optional[Tuple[int, int, int]] = None) -> Dict[str, Any]:
     """
     Extracts brand-tailored color accents and ambient lighting.
+    A colour read from the site itself (accent_rgb) wins over the built-in presets below.
     """
+    if accent_rgb:
+        return palette_from_accent(tuple(int(c) for c in accent_rgb))
     d = domain.lower()
     if "campusweb" in d:
         return {
@@ -262,18 +279,38 @@ def render_interactive_scene_frames(
     active_card_idx: int = 0,
     target_xy: Tuple[int, int] = (1600, 68),
     zoom_in: bool = True,
-    fps: int = 30
+    fps: int = 30,
+    live_clip: Optional[Path] = None,
+    prev_active_card_idx: Optional[int] = None,
+    is_first_scene: bool = False,
+    global_time_offset: float = 0.0,
+    prev_cursor_norm: Optional[Tuple[float, float]] = None,
+    fade_out_sec: float = 0.0,
+    seed: int = 0,
+    target_size: Optional[Tuple[float, float]] = None,
+    watermark_path: Optional[Path] = None,
+    brand_rgb: Optional[Tuple[int, int, int]] = None,
+    do_click: bool = True,
 ) -> Tuple[Path, float]:
     """
-    Renders agency-grade MacBook showcase video frames:
-    - macOS floating application window + ambient background
-    - Specular glass light sheen sweep across the Mac window
-    - 3 Synchronized right-hand benefit cards
-    - Natural cubic ease-out mouse glide to target element inside the Mac window
-    - Tactile cursor button press down + expanding glowing click ripple
-    - Parallax floating camera motion
-    Returns (output_mp4_path, click_time_sec)
+    Renders one agency-grade showcase scene (1920x1080) and returns (output_mp4_path, click_time_sec).
+
+    With `live_clip` (a recorded browser beat, see engine.browser.live_capture) the *real* page is
+    on screen: hover states, scrolling, route transitions, plus a spring-physics camera that
+    frames what the narrator talks about, a human-like pointer, motion blur, a softly tilted
+    3D window and three benefit cards whose active state / progress rail follow the scene.
+    Without it (or if it cannot be read) the static screenshot is animated with the same camera
+    and pointer language, so the product never fails to produce a video.
+
+    click_time_sec is when the pointer presses, in scene time (0.0 if nothing is clicked); the
+    audio mixer lays the click foley on it.
     """
+    # Imported here: showcase/scene_plan build on this module's palette helper.
+    from .live_clip import LiveClip
+    from .scene_plan import build_live_plan, build_static_plan
+    from .showcase import ShowcaseRenderer, get_assets
+    from ..config import config as _cfg
+
     output_mp4.parent.mkdir(parents=True, exist_ok=True)
     if not cards:
         cards = [
@@ -282,83 +319,39 @@ def render_interactive_scene_frames(
             {"category": "OTHER BENEFITS", "title": "Enterprise Reliability", "desc": "Bank-grade data privacy and 100% uptime."}
         ]
 
-    # Pre-render the master Mac canvas (takes ~50ms once!)
-    base_bgr, (vp_x, vp_y), (vp_w, vp_h) = compose_mac_showcase_canvas(
-        image_path=image_path,
-        domain=domain,
-        cards=cards,
-        active_card_idx=active_card_idx
+    palette = get_brand_palette(domain, brand_rgb)
+    assets = get_assets(domain, palette, cards)
+
+    plan = None
+    clip = None
+    if live_clip:
+        try:
+            clip = LiveClip(live_clip)
+            plan = build_live_plan(clip, duration_sec, domain, seed=seed)
+        except Exception:
+            clip, plan = None, None
+
+    if plan is None:
+        img = None
+        try:
+            img = cv2.imdecode(np.fromfile(str(image_path), dtype=np.uint8), cv2.IMREAD_COLOR)
+        except Exception:
+            img = None
+        if img is None:
+            img = np.full((800, 1280, 3), (35, 25, 20), dtype=np.uint8)
+        plan = build_static_plan(
+            img, duration_sec, (float(target_xy[0]), float(target_xy[1])),
+            start_norm=prev_cursor_norm, seed=seed, domain=domain, zoom_in=zoom_in,
+            target_size=target_size or (160.0, 48.0), do_click=do_click,
+        )
+
+    renderer = ShowcaseRenderer(
+        plan, assets, fps=fps, active_idx=active_card_idx, prev_idx=prev_active_card_idx,
+        is_first=is_first_scene, fade_out=fade_out_sec, global_offset=global_time_offset,
+        watermark_path=watermark_path,
     )
+    click_time_sec = renderer.render(output_mp4)
 
-    palette = get_brand_palette(domain)
-    ripple_color = palette["accent_bgr"]
-
-    total_frames = max(30, int(duration_sec * fps))
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    writer = cv2.VideoWriter(str(output_mp4), fourcc, fps, (1920, 1080))
-
-    # Map target coordinates into the MacBook inner viewport
-    orig_tx, orig_ty = target_xy
-    dest_x = vp_x + int(orig_tx * (vp_w / 1920.0))
-    dest_y = vp_y + int(orig_ty * (vp_h / 1080.0))
-
-    # Clamp coordinates to stay within Mac window
-    dest_x = max(vp_x + 10, min(vp_x + vp_w - 20, dest_x))
-    dest_y = max(vp_y + 10, min(vp_y + vp_h - 20, dest_y))
-
-    start_x = vp_x + (vp_w // 2)
-    start_y = vp_y + (vp_h // 2) + 60
-
-    glide_end_frame = int(total_frames * 0.40)
-    click_frame = glide_end_frame
-    click_time_sec = float(click_frame) / float(fps)
-
-    # Pre-compute viewport mask for glass sheen
-    sheen_mask = np.zeros((1080, 1920), dtype=np.uint8)
-    sheen_mask[vp_y:vp_y + vp_h, vp_x:vp_x + vp_w] = 255
-
-    for f in range(total_frames):
-        frame = base_bgr.copy()
-
-        # 1. Specular Glass Reflection Sheen (Subtle light reflection sweep across display)
-        if f < 42:
-            sheen_t = f / 42.0
-            sheen_overlay = np.zeros_like(frame, dtype=np.uint8)
-            sweep_x = int(vp_x - 120 + sheen_t * (vp_w + 350))
-            pts = np.array([
-                [sweep_x, vp_y],
-                [sweep_x + 110, vp_y],
-                [sweep_x - 160, vp_y + vp_h],
-                [sweep_x - 270, vp_y + vp_h]
-            ], dtype=np.int32)
-            cv2.fillPoly(sheen_overlay, [pts], (255, 255, 255))
-            sheen_clipped = cv2.bitwise_and(sheen_overlay, sheen_overlay, mask=sheen_mask)
-            sheen_alpha = 0.08 * (1.0 - abs(sheen_t - 0.5) * 2.0)
-            cv2.addWeighted(sheen_clipped, sheen_alpha, frame, 1.0, 0, frame)
-
-        # 2. Parallax subtle floating motion (breathing camera effect)
-        t = f / float(total_frames)
-        float_dy = int(3.0 * np.sin(2 * np.pi * t))
-
-        # 3. Cursor glide physics
-        if f < glide_end_frame:
-            ease = ease_out_cubic(f / float(glide_end_frame))
-            cur_x = int(start_x + (dest_x - start_x) * ease)
-            cur_y = int(start_y + (dest_y - start_y) * ease) + float_dy
-        else:
-            cur_x = dest_x
-            cur_y = dest_y + float_dy
-
-        # 4. Expanding click ripple
-        if f >= click_frame and f < click_frame + 28:
-            ripple_t = (f - click_frame) / 28.0
-            draw_click_ripple(frame, dest_x, dest_y + float_dy, ripple_t, color_bgr=ripple_color)
-
-        # 5. Draw pointer cursor with tactile micro-scale on click
-        cursor_scale = 0.88 if (click_frame <= f < click_frame + 6) else 1.0
-        draw_cursor(frame, cur_x, cur_y, scale=cursor_scale)
-
-        writer.write(frame)
-
-    writer.release()
+    if clip is not None and not _cfg.keep_live_frames:
+        clip.cleanup()
     return output_mp4, click_time_sec

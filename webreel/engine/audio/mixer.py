@@ -59,11 +59,11 @@ class AudioMixer:
 
         if click_idx is not None:
             delay_ms = int(click_offset_sec * 1000)
-            filter_parts.append(f"[{click_idx}:a]adelay={delay_ms}|{delay_ms},volume=0.9[click]")
+            filter_parts.append(f"[{click_idx}:a]adelay={delay_ms}|{delay_ms},volume=0.62[click]")
             amix_inputs.append("[click]")
 
         if len(amix_inputs) > 1:
-            filter_parts.append(f"{''.join(amix_inputs)}amix=inputs={len(amix_inputs)}:duration=first:dropout_transition=2[aout]")
+            filter_parts.append(f"{''.join(amix_inputs)}amix=inputs={len(amix_inputs)}:duration=first:dropout_transition=2[mixed];[mixed]volume=6dB,alimiter=limit=0.95:level=disabled[aout]")
             filter_complex = ";".join(filter_parts)
             cmd = [
                 "ffmpeg", "-y",

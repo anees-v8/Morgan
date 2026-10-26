@@ -116,12 +116,25 @@ class ScriptWriter:
         company = brand.get("company_name", "Our Platform")
         domain = brand.get("clean_domain", "example.com")
         tagline = brand.get("tagline", "The modern digital experience")
-        cards = self.extract_feature_cards(brand, scenes)
+
+        # Dynamic story: narration + cards come from the plan written for THIS website
+        # (see ai/story_director.py). The fixed templates below remain the fallback.
+        site_plan = next((s.get("site_plan") for s in scenes if s.get("site_plan")), None)
+        if site_plan and site_plan.get("cards"):
+            cards = [{"category": c["category"], "title": c["title"], "desc": c["desc"]} for c in site_plan["cards"][:3]]
+        else:
+            cards = self.extract_feature_cards(brand, scenes)
 
         # High-Impact Storytelling Framework (Hook -> Solution -> Core Pillars -> Proof/CTA)
         for idx, s in enumerate(scenes):
             stype = s.get("scene_type", "features").lower()
             stitle = s.get("title", "").split("|")[0].split("—")[0].strip() or "Core Platform"
+
+            if s.get("plan_say"):
+                s["narration"] = s["plan_say"]
+                s["duration_sec"] = round(len(s["narration"].split()) / 2.4 + 0.6)
+                s["active_card_idx"] = int(s.get("plan_card", min(idx, 2)))
+                continue
 
             if idx == 0 or stype == "hero":
                 # Hook & Radical Solution introduction

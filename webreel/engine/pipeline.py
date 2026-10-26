@@ -58,6 +58,13 @@ async def run_pipeline(
         meta_desc=home_scene.get("meta_description", "")
     )
 
+    # The dynamic story plan (written from this site's own content) overrides the guessed brand text.
+    site_plan = next((sc.get("site_plan") for sc in scenes if sc.get("site_plan")), None)
+    if site_plan:
+        brand = {**brand,
+                 "company_name": site_plan.get("brand_name") or brand.get("company_name"),
+                 "tagline": site_plan.get("tagline") or brand.get("tagline")}
+
     # 3. Synchronized Script Generation
     report(60, "Writing synchronized narrator script...")
     scriptwriter = ScriptWriter()
