@@ -28,19 +28,23 @@ def get_system_font(size: int, bold: bool = False) -> ImageFont.ImageFont:
                 pass
     return ImageFont.load_default()
 
-def draw_cursor(img_bgr: np.ndarray, x: int, y: int):
+def draw_cursor(img_bgr: np.ndarray, x: int, y: int, scale: float = 1.0):
     """
-    Draws a clean, modern white macOS/Windows cursor with dark drop shadow.
+    Draws a clean, modern white macOS/Windows cursor with dark drop shadow,
+    supporting physical tactile click scaling.
     """
-    poly = np.array([
-        [x, y],
-        [x, y + 26],
-        [x + 7, y + 19],
-        [x + 14, y + 29],
-        [x + 19, y + 26],
-        [x + 11, y + 16],
-        [x + 20, y + 16]
-    ], dtype=np.int32)
+    base_poly = np.array([
+        [0.0, 0.0],
+        [0.0, 26.0],
+        [7.0, 19.0],
+        [14.0, 29.0],
+        [19.0, 26.0],
+        [11.0, 16.0],
+        [20.0, 16.0]
+    ], dtype=np.float32)
+
+    scaled = (base_poly * scale).astype(np.int32)
+    poly = scaled + [x, y]
 
     shadow = poly + [2, 2]
     cv2.fillPoly(img_bgr, [shadow], (10, 10, 10))
@@ -259,14 +263,16 @@ def render_interactive_scene_frames(
     target_xy: Tuple[int, int] = (1600, 68),
     zoom_in: bool = True,
     fps: int = 30
-) -> Path:
+) -> Tuple[Path, float]:
     """
     Renders agency-grade MacBook showcase video frames:
     - macOS floating application window + ambient background
+    - Specular glass light sheen sweep across the Mac window
     - 3 Synchronized right-hand benefit cards
     - Natural cubic ease-out mouse glide to target element inside the Mac window
-    - Expanding glowing click ripple on button arrival
+    - Tactile cursor button press down + expanding glowing click ripple
     - Parallax floating camera motion
+    Returns (output_mp4_path, click_time_sec)
     """
     output_mp4.parent.mkdir(parents=True, exist_ok=True)
     if not cards:
@@ -305,15 +311,36 @@ def render_interactive_scene_frames(
 
     glide_end_frame = int(total_frames * 0.40)
     click_frame = glide_end_frame
+    click_time_sec = float(click_frame) / float(fps)
+
+    # Pre-compute viewport mask for glass sheen
+    sheen_mask = np.zeros((1080, 1920), dtype=np.uint8)
+    sheen_mask[vp_y:vp_y + vp_h, vp_x:vp_x + vp_w] = 255
 
     for f in range(total_frames):
         frame = base_bgr.copy()
 
-        # 1. Parallax subtle floating motion (breathing camera effect)
+        # 1. Specular Glass Reflection Sheen (Subtle light reflection sweep across display)
+        if f < 42:
+            sheen_t = f / 42.0
+            sheen_overlay = np.zeros_like(frame, dtype=np.uint8)
+            sweep_x = int(vp_x - 120 + sheen_t * (vp_w + 350))
+            pts = np.array([
+                [sweep_x, vp_y],
+                [sweep_x + 110, vp_y],
+                [sweep_x - 160, vp_y + vp_h],
+                [sweep_x - 270, vp_y + vp_h]
+            ], dtype=np.int32)
+            cv2.fillPoly(sheen_overlay, [pts], (255, 255, 255))
+            sheen_clipped = cv2.bitwise_and(sheen_overlay, sheen_overlay, mask=sheen_mask)
+            sheen_alpha = 0.08 * (1.0 - abs(sheen_t - 0.5) * 2.0)
+            cv2.addWeighted(sheen_clipped, sheen_alpha, frame, 1.0, 0, frame)
+
+        # 2. Parallax subtle floating motion (breathing camera effect)
         t = f / float(total_frames)
         float_dy = int(3.0 * np.sin(2 * np.pi * t))
 
-        # 2. Cursor glide physics
+        # 3. Cursor glide physics
         if f < glide_end_frame:
             ease = ease_out_cubic(f / float(glide_end_frame))
             cur_x = int(start_x + (dest_x - start_x) * ease)
@@ -322,15 +349,16 @@ def render_interactive_scene_frames(
             cur_x = dest_x
             cur_y = dest_y + float_dy
 
-        # 3. Expanding click ripple
+        # 4. Expanding click ripple
         if f >= click_frame and f < click_frame + 28:
             ripple_t = (f - click_frame) / 28.0
             draw_click_ripple(frame, dest_x, dest_y + float_dy, ripple_t, color_bgr=ripple_color)
 
-        # 4. Draw pointer cursor
-        draw_cursor(frame, cur_x, cur_y)
+        # 5. Draw pointer cursor with tactile micro-scale on click
+        cursor_scale = 0.88 if (click_frame <= f < click_frame + 6) else 1.0
+        draw_cursor(frame, cur_x, cur_y, scale=cursor_scale)
 
         writer.write(frame)
 
     writer.release()
-    return output_mp4
+    return output_mp4, click_time_sec

@@ -11,46 +11,50 @@ class JobManager:
     def _load_cached_jobs(self):
         # Register verified demo jobs
         from ...engine.config import OUTPUT_DIR
-        campusweb_v2_mp4 = OUTPUT_DIR / "campusweb_agency_v2" / "campusweb.co.in_intro.mp4"
-        if campusweb_v2_mp4.exists():
-            self.jobs["campusweb_agency_v2"] = {
-                "job_id": "campusweb_agency_v2",
+        campusweb_v3_mp4 = OUTPUT_DIR / "campusweb_interactive_v3" / "campusweb.co.in_intro.mp4"
+        campusweb_path = campusweb_v3_mp4 if campusweb_v3_mp4.exists() else (OUTPUT_DIR / "campusweb_agency_v2" / "campusweb.co.in_intro.mp4")
+        if campusweb_path.exists():
+            campusweb_job = {
+                "job_id": "campusweb_interactive_v3",
                 "url": "https://campusweb.co.in",
                 "status": "completed",
                 "progress_percent": 100,
-                "current_stage": "Video generation complete!",
+                "current_stage": "Interactive Video generation complete!",
                 "brand": {
                     "company_name": "CampusWeb",
                     "clean_domain": "campusweb.co.in",
                     "tagline": "Built for Coaching. Crafted for Speed & Scale."
                 },
-                "video_path": str(campusweb_v2_mp4),
+                "video_path": str(campusweb_path),
                 "video_filename": "campusweb.co.in_intro.mp4",
                 "scenes_count": 4,
                 "duration_seconds": 59.4,
                 "scenes": [
-                    { "scene_type": "Hero", "title": "CampusWeb Operating Suite", "duration_sec": 17, "narration": "Meet CampusWeb. The purpose-built operating suite for coaching institutes. Built from the ground up to eliminate daily busywork and deliver unmatched speed, scale, and operational control." },
-                    { "scene_type": "Dashboard", "title": "Central Operations & Tracking", "duration_sec": 12, "narration": "Inside the core dashboard, everything is unified. From 1-tap dynamic QR attendance to automated tracking, manage your entire operations effortlessly from a single screen." },
-                    { "scene_type": "Features", "title": "Automated WhatsApp Receipts", "duration_sec": 11, "narration": "Engineered for high performance. Experience automated WhatsApp receipts, instant synchronization, and workflows that keep your entire organization moving forward without friction." },
-                    { "scene_type": "Pricing", "title": "Zero Commission Guarantee", "duration_sec": 13, "narration": "Transparent, flexible plans backed by our zero commission guarantee. Zero paperwork, zero hidden friction. Take your operations to the next level today at campusweb.co.in." }
+                    { "scene_type": "Hero", "title": "CampusWeb Operating Suite", "duration_sec": 14, "narration": "Meet CampusWeb. Built for coaching, crafted for speed and scale. Built from the ground up to eliminate daily busywork and deliver unmatched speed, scale, and operational control." },
+                    { "scene_type": "Dashboard", "title": "Directors & Admins Control", "duration_sec": 11, "narration": "Inside the core dashboard, everything is unified. From 1-tap dynamic QR attendance to automated tracking, manage your entire operations effortlessly from a single screen." },
+                    { "scene_type": "Features", "title": "Save 2+ Hours Daily for Teachers", "duration_sec": 11, "narration": "Engineered for high performance. Experience automated WhatsApp receipts, instant synchronization, and workflows that keep your entire organization moving forward without friction." },
+                    { "scene_type": "Pricing", "title": "Pricing Plans That Grow with You", "duration_sec": 13, "narration": "Transparent, flexible plans backed by our zero commission guarantee. Zero paperwork, zero hidden friction. Take your operations to the next level today at campusweb.co.in." }
                 ],
                 "error": None
             }
+            self.jobs["campusweb_interactive_v3"] = campusweb_job
+            self.jobs["campusweb_agency_v2"] = campusweb_job
 
-        linear_v2_mp4 = OUTPUT_DIR / "linear_agency_v2" / "linear.app_intro.mp4"
-        if linear_v2_mp4.exists():
-            self.jobs["linear_agency_v2"] = {
-                "job_id": "linear_agency_v2",
+        linear_v3_mp4 = OUTPUT_DIR / "linear_interactive_v3" / "linear.app_intro.mp4"
+        linear_path = linear_v3_mp4 if linear_v3_mp4.exists() else (OUTPUT_DIR / "linear_agency_v2" / "linear.app_intro.mp4")
+        if linear_path.exists():
+            linear_job = {
+                "job_id": "linear_interactive_v3",
                 "url": "https://linear.app",
                 "status": "completed",
                 "progress_percent": 100,
-                "current_stage": "Video generation complete!",
+                "current_stage": "Interactive Video generation complete!",
                 "brand": {
                     "company_name": "Linear",
                     "clean_domain": "linear.app",
                     "tagline": "The product development system for teams and agents."
                 },
-                "video_path": str(linear_v2_mp4),
+                "video_path": str(linear_path),
                 "video_filename": "linear.app_intro.mp4",
                 "scenes_count": 4,
                 "duration_seconds": 53.7,
@@ -62,6 +66,8 @@ class JobManager:
                 ],
                 "error": None
             }
+            self.jobs["linear_interactive_v3"] = linear_job
+            self.jobs["linear_agency_v2"] = linear_job
 
     def create_job(self, job_id: str, url: str) -> Dict[str, Any]:
         job_data = {

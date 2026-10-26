@@ -67,16 +67,12 @@ class VideoProducer:
             audio_duration = self.get_audio_duration(voice_raw)
             scene_duration = max(7.0, audio_duration + 0.6)
 
-            # Step B: Mix voiceover with background music (auto-ducking to 8%)
-            mixed_audio = job_dir / f"{scene_id}_mixed.mp3"
-            self.mixer.mix_voice_and_music(voice_raw, mixed_audio, duration=scene_duration)
-
-            # Step C: Render agency-grade MacBook showcase motion video (gliding cursor + ripples + 3 cards)
+            # Step B: Render agency-grade MacBook showcase motion video (gliding cursor + ripples + 3 cards + specular sheen)
             motion_mp4 = job_dir / f"{scene_id}_motion.mp4"
             cta_coords = scene.get("cta_coordinates")
             target_xy = (cta_coords["x"], cta_coords["y"]) if cta_coords else (1600, 68)
 
-            render_interactive_scene_frames(
+            motion_mp4, click_time_sec = render_interactive_scene_frames(
                 image_path=raw_img,
                 output_mp4=motion_mp4,
                 duration_sec=scene_duration,
@@ -86,6 +82,15 @@ class VideoProducer:
                 target_xy=target_xy,
                 zoom_in=(idx % 2 == 0),
                 fps=config.video_fps
+            )
+
+            # Step C: Mix voiceover with background music (auto-ducking to 8%) and millisecond-accurate click foley
+            mixed_audio = job_dir / f"{scene_id}_mixed.mp3"
+            self.mixer.mix_voice_and_music(
+                voiceover_path=voice_raw,
+                output_mixed_path=mixed_audio,
+                duration=scene_duration,
+                click_offset_sec=click_time_sec
             )
 
             # Step D: Composite scene video with audio and watermark
@@ -106,18 +111,26 @@ class VideoProducer:
         outro_voice = job_dir / "scene_outro_voice.mp3"
         await self.tts.generate_speech_async(f"Start creating today at {brand.get('clean_domain')}.", outro_voice)
         outro_dur = max(6.0, self.get_audio_duration(outro_voice) + 0.6)
-        
-        outro_mixed = job_dir / "scene_outro_mixed.mp3"
-        self.mixer.mix_voice_and_music(outro_voice, outro_mixed, duration=outro_dur)
 
         outro_motion = job_dir / "scene_outro_motion.mp4"
-        render_interactive_scene_frames(
+        outro_motion, outro_click_time = render_interactive_scene_frames(
             image_path=outro_img,
             output_mp4=outro_motion,
             duration_sec=outro_dur,
+            domain=domain,
+            cards=feature_cards,
+            active_card_idx=2,
             target_xy=(960, 570),
             zoom_in=True,
             fps=config.video_fps
+        )
+
+        outro_mixed = job_dir / "scene_outro_mixed.mp3"
+        self.mixer.mix_voice_and_music(
+            voiceover_path=outro_voice,
+            output_mixed_path=outro_mixed,
+            duration=outro_dur,
+            click_offset_sec=outro_click_time
         )
 
         outro_clip = job_dir / "scene_outro_clip.mp4"

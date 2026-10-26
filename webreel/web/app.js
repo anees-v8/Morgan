@@ -224,25 +224,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // Showcase cards instant preview
     const DEMO_REGISTRY = {
         campusweb: {
-            job_id: "campusweb_agency_v2",
-            video_url: "/output/campusweb_agency_v2/campusweb.co.in_intro.mp4",
-            download_url: "/output/campusweb_agency_v2/campusweb.co.in_intro.mp4",
+            job_id: "campusweb_interactive_v3",
+            video_url: "/output/campusweb_interactive_v3/campusweb.co.in_intro.mp4",
+            download_url: "/output/campusweb_interactive_v3/campusweb.co.in_intro.mp4",
             brand: {
                 company_name: "CampusWeb",
                 clean_domain: "campusweb.co.in",
                 tagline: "Built for Coaching. Crafted for Speed & Scale."
             },
             scenes: [
-                { scene_type: "Hero", title: "CampusWeb Operating Suite", duration_sec: 17, narration: "Meet CampusWeb. The purpose-built operating suite for coaching institutes. Built from the ground up to eliminate daily busywork and deliver unmatched speed, scale, and operational control." },
-                { scene_type: "Dashboard", title: "Central Operations & Tracking", duration_sec: 12, narration: "Inside the core dashboard, everything is unified. From 1-tap dynamic QR attendance to automated tracking, manage your entire operations effortlessly from a single screen." },
-                { scene_type: "Features", title: "Automated WhatsApp Receipts", duration_sec: 11, narration: "Engineered for high performance. Experience automated WhatsApp receipts, instant synchronization, and workflows that keep your entire organization moving forward without friction." },
-                { scene_type: "Pricing", title: "Zero Commission Guarantee", duration_sec: 13, narration: "Transparent, flexible plans backed by our zero commission guarantee. Zero paperwork, zero hidden friction. Take your operations to the next level today at campusweb.co.in." }
+                { scene_type: "Hero", title: "CampusWeb Operating Suite", duration_sec: 14, narration: "Meet CampusWeb. Built for coaching, crafted for speed and scale. Built from the ground up to eliminate daily busywork and deliver unmatched speed, scale, and operational control." },
+                { scene_type: "Dashboard", title: "Directors & Admins Control", duration_sec: 11, narration: "Inside the core dashboard, everything is unified. From 1-tap dynamic QR attendance to automated tracking, manage your entire operations effortlessly from a single screen." },
+                { scene_type: "Features", title: "Save 2+ Hours Daily for Teachers", duration_sec: 11, narration: "Engineered for high performance. Experience automated WhatsApp receipts, instant synchronization, and workflows that keep your entire organization moving forward without friction." },
+                { scene_type: "Pricing", title: "Pricing Plans That Grow with You", duration_sec: 13, narration: "Transparent, flexible plans backed by our zero commission guarantee. Zero paperwork, zero hidden friction. Take your operations to the next level today at campusweb.co.in." }
             ]
         },
         linear: {
-            job_id: "linear_agency_v2",
-            video_url: "/output/linear_agency_v2/linear.app_intro.mp4",
-            download_url: "/output/linear_agency_v2/linear.app_intro.mp4",
+            job_id: "linear_interactive_v3",
+            video_url: "/output/linear_interactive_v3/linear.app_intro.mp4",
+            download_url: "/output/linear_interactive_v3/linear.app_intro.mp4",
             brand: {
                 company_name: "Linear",
                 clean_domain: "linear.app",
