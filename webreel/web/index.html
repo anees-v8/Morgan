@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebReel — Autonomous AI Website Video Generator</title>
+    <meta name="description" content="Generate high-production, cinematic 90-second marketing videos for any website automatically with autonomous browser navigation, vision AI, and neural voiceover.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Ambient background lights -->
+    <div class="ambient-glow bg-glow-1"></div>
+    <div class="ambient-glow bg-glow-2"></div>
+    <div class="ambient-glow bg-glow-3"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar" id="main-nav">
+        <div class="nav-container">
+            <a href="#" class="nav-brand" id="nav-brand-logo">
+                <div class="brand-badge-icon">🎬</div>
+                <div class="brand-titles">
+                    <span class="brand-name">WebReel</span>
+                    <span class="brand-tag">AI Video Engine</span>
+                </div>
+            </a>
+
+            <div class="nav-links">
+                <a href="#studio-section" class="nav-link active">Studio</a>
+                <a href="#showcase-section" class="nav-link">Showcase</a>
+                <a href="#pricing-section" class="nav-link">Pricing</a>
+                <a href="/webreel_mindmap.html" target="_blank" class="nav-link mindmap-pill">
+                    <span>🧠 Mindmap Blueprint</span>
+                </a>
+            </div>
+
+            <div class="nav-actions">
+                <div class="status-indicator" id="api-status-pill">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Engine Ready</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Hero Studio -->
+    <main class="hero-section" id="studio-section">
+        <div class="hero-content">
+            <div class="hero-chip">
+                <span class="chip-sparkle">✨</span>
+                <span>Zero Human in the Loop · Full 90-Second 1080p Walkthrough</span>
+            </div>
+
+            <h1 class="hero-title">
+                Turn Any Live Website into a <br>
+                <span class="gradient-text">Cinematic Product Video</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                WebReel's autonomous agent launches a real Chromium browser, explores key pages, captures real clicks, analyzes visuals with multimodal AI, and synthesizes Apple-style narration into an agency-grade 1080p MP4.
+            </p>
+
+            <!-- Generator Interactive Console -->
+            <div class="generator-card" id="generator-console">
+                <form id="generate-form" class="generator-form">
+                    <div class="input-main-row">
+                        <div class="url-input-container">
+                            <span class="url-protocol-prefix">https://</span>
+                            <input 
+                                type="text" 
+                                id="target-url-input" 
+                                class="url-input" 
+                                placeholder="stripe.com" 
+                                required 
+                                autocomplete="off"
+                                spellcheck="false"
+                            >
+                        </div>
+                        <button type="submit" id="generate-submit-btn" class="btn-generate">
+                            <span class="btn-icon">⚡</span>
+                            <span class="btn-text">Generate Video</span>
+                        </button>
+                    </div>
+
+                    <!-- Preset Chips -->
+                    <div class="presets-row">
+                        <span class="presets-label">Try live demos:</span>
+                        <button type="button" class="preset-btn" data-url="campusweb.co.in">campusweb.co.in</button>
+                        <button type="button" class="preset-btn" data-url="linear.app">linear.app</button>
+                        <button type="button" class="preset-btn" data-url="stripe.com">stripe.com</button>
+                        <button type="button" class="preset-btn" data-url="notion.so">notion.so</button>
+                    </div>
+
+                    <!-- Settings Accordion / Options Bar -->
+                    <div class="generator-options-bar">
+                        <div class="option-group">
+                            <label for="video-style-select">Visual Style</label>
+                            <select id="video-style-select" class="select-control">
+                                <option value="cinematic_saas">Cinematic SaaS (Smooth Ken Burns)</option>
+                                <option value="punchy_launch">Punchy Launch (Fast Cut 60s)</option>
+                                <option value="minimal_portfolio">Minimalist Architecture (Subtle Pan)</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group">
+                            <label for="voice-select">Voiceover Narration</label>
+                            <select id="voice-select" class="select-control">
+                                <option value="en-US-ChristopherNeural">Christopher (Confident Male, 1.08x)</option>
+                                <option value="en-US-JennyNeural">Jenny (Warm & Friendly Female)</option>
+                                <option value="en-US-GuyNeural">Guy (Deep Executive Male)</option>
+                                <option value="en-US-AriaNeural">Aria (Crystal Clear Technical)</option>
+                            </select>
+                        </div>
+
+                        <div class="option-group option-toggle">
+                            <label for="watermark-toggle">Watermark</label>
+                            <div class="toggle-wrapper">
+                                <input type="checkbox" id="watermark-toggle" checked>
+                                <span class="toggle-sub">Free Tier ("⚡ Generated by WebReel")</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Live Progress Tracker (Hidden until launched) -->
+                <div class="pipeline-progress-panel" id="progress-panel" style="display: none;">
+                    <div class="progress-header">
+                        <div class="progress-title-block">
+                            <div class="spinner-ring" id="progress-spinner"></div>
+                            <div>
+                                <h3 id="progress-stage-title">Launching Chromium Agent...</h3>
+                                <p id="progress-job-id" class="mono-text">Job ID: --</p>
+                            </div>
+                        </div>
+                        <div class="progress-stats">
+                            <span class="progress-percent-val" id="progress-percent">0%</span>
+                            <span class="progress-timer" id="progress-timer">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Multi-Stage Stepper -->
+                    <div class="stage-stepper">
+                        <div class="step-item" id="step-browser">
+                            <div class="step-dot">1</div>
+                            <span class="step-label">Browser Crawl</span>
+                        </div>
+                        <div class="step-divider"></div>
+                        <div class="step-item" id="step-vision">
+                            <div class="step-dot">2</div>
+                            <span class="step-label">Vision Analysis</span>
+                        </div>
+                        <div class="step-divider"></div>
+                        <div class="step-item" id="step-script">
+                            <div class="step-dot">3</div>
+                            <span class="step-label">Scriptwriting</span>
+                        </div>
+                        <div class="step-divider"></div>
+                        <div class="step-item" id="step-audio">
+                            <div class="step-dot">4</div>
+                            <span class="step-label">Voice & Audio</span>
+                        </div>
+                        <div class="step-divider"></div>
+                        <div class="step-item" id="step-render">
+                            <div class="step-dot">5</div>
+                            <span class="step-label">FFmpeg 1080p</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar Track -->
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progress-fill-bar" style="width: 0%;"></div>
+                    </div>
+
+                    <!-- Live Terminal Output -->
+                    <div class="terminal-box" id="terminal-feed">
+                        <div class="terminal-line">[SYSTEM] Initializing WebReel Autonomous Pipeline...</div>
+                    </div>
+                </div>
+
+                <!-- Live Video Studio Result View (Shown upon completion) -->
+                <div class="video-result-panel" id="video-result-panel" style="display: none;">
+                    <div class="result-header">
+                        <div class="result-brand-info">
+                            <span class="result-badge">READY TO EXPORT</span>
+                            <h2 id="result-video-title">Stripe Product Video</h2>
+                            <p id="result-video-tagline" class="result-tagline">Financial Infrastructure for the Internet</p>
+                        </div>
+                        <div class="result-actions">
+                            <a href="#" id="result-download-btn" class="btn-download" download>
+                                <span>📥 Download 1080p MP4</span>
+                            </a>
+                            <button id="result-reset-btn" class="btn-secondary">New Video</button>
+                        </div>
+                    </div>
+
+                    <div class="video-container">
+                        <video id="player-video" controls playsinline preload="metadata">
+                            <source id="video-source" src="" type="video/mp4">
+                            Your browser does not support HTML5 video playback.
+                        </video>
+                    </div>
+
+                    <!-- Video Timeline & Script Inspector -->
+                    <div class="script-inspector">
+                        <div class="inspector-header">
+                            <h3>🎬 Synchronized Narration Transcript</h3>
+                            <span class="badge-accent">Apple Launch Style</span>
+                        </div>
+                        <div class="scenes-timeline" id="scenes-timeline-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Showcase Gallery Section -->
+    <section class="section-showcase" id="showcase-section">
+        <div class="section-header">
+            <span class="section-eyebrow">PORTFOLIO DEMOS</span>
+            <h2>Generated in Under 4 Minutes</h2>
+            <p>Real Chromium browser recordings processed through WebReel's autonomous AI pipeline.</p>
+        </div>
+
+        <div class="showcase-grid">
+            <div class="showcase-card" data-demo="campusweb">
+                <div class="card-thumb" style="background: linear-gradient(135deg, #184e38, #0b2319);">
+                    <div class="card-overlay-badge">1080p 30fps · Ready</div>
+                    <div class="play-indicator">▶</div>
+                    <div class="card-title-overlay">CampusWeb</div>
+                </div>
+                <div class="card-body">
+                    <h4>CampusWeb Operating Platform</h4>
+                    <p>Dynamic QR attendance, WhatsApp fee receipts, test scheduling, and dashboard tour.</p>
+                    <div class="card-meta">
+                        <span>⏱ 00:50</span>
+                        <span>⚡ 4 sections analyzed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-card" data-demo="linear">
+                <div class="card-thumb" style="background: linear-gradient(135deg, #5e6ad2, #18191b);">
+                    <div class="card-overlay-badge">1080p 30fps · Ready</div>
+                    <div class="play-indicator">▶</div>
+                    <div class="card-title-overlay">Linear</div>
+                </div>
+                <div class="card-body">
+                    <h4>Linear Product Development</h4>
+                    <p>Issue boards, roadmaps, automated cycles, and dark mode interface walkthrough.</p>
+                    <div class="card-meta">
+                        <span>⏱ 01:05</span>
+                        <span>⚡ 4 sections analyzed</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="showcase-card" data-demo="notion">
+                <div class="card-thumb" style="background: linear-gradient(135deg, #000000, #2f3437);">
+                    <div class="card-overlay-badge">1080p 30fps</div>
+                    <div class="play-indicator">▶</div>
+                    <div class="card-title-overlay">Notion</div>
+                </div>
+                <div class="card-body">
+                    <h4>Notion AI Workspace</h4>
+                    <p>Template gallery navigation, AI docs interaction, and team plan summary.</p>
+                    <div class="card-meta">
+                        <span>⏱ 01:30</span>
+                        <span>⚡ 5 pages visited</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="section-pricing" id="pricing-section">
+        <div class="section-header">
+            <span class="section-eyebrow">TRANSPARENT PRICING</span>
+            <h2>Simple Pricing that Scales with You</h2>
+            <p>Replace $3,000 video agency bills with instant autonomous generation.</p>
+        </div>
+
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <h3>Free Starter</h3>
+                    <div class="plan-price">$0 <span>/ month</span></div>
+                    <p>Perfect for indie creators & launch tests.</p>
+                </div>
+                <ul class="plan-features">
+                    <li>3 videos per month</li>
+                    <li>720p HD resolution</li>
+                    <li>WebReel watermark</li>
+                    <li>Standard voiceover</li>
+                    <li>Public share link</li>
+                </ul>
+                <button class="btn-plan-select">Get Started Free</button>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="popular-ribbon">MOST POPULAR</div>
+                <div class="plan-header">
+                    <h3>Pro Creator</h3>
+                    <div class="plan-price">$29 <span>/ month</span></div>
+                    <p>For SaaS founders & product marketers.</p>
+                </div>
+                <ul class="plan-features">
+                    <li>15 videos per month</li>
+                    <li>Full 1080p 60fps</li>
+                    <li>No watermark (White-label)</li>
+                    <li>All 12 Neural Voiceover styles</li>
+                    <li>Custom brand color & logo</li>
+                    <li>Instant MP4 download</li>
+                </ul>
+                <button class="btn-plan-select btn-featured">Start 7-Day Trial</button>
+            </div>
+
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <h3>Agency Studio</h3>
+                    <div class="plan-price">$299 <span>/ month</span></div>
+                    <p>For marketing & design agencies.</p>
+                </div>
+                <ul class="plan-features">
+                    <li>Unlimited video generation</li>
+                    <li>4K Ultra-HD rendering</li>
+                    <li>Multi-client brand management</li>
+                    <li>REST API & Webhook access</li>
+                    <li>10 team seats</li>
+                    <li>Priority GPU worker queue</li>
+                </ul>
+                <button class="btn-plan-select">Scale with Agency</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="footer-brand-col">
+                <div class="nav-brand">
+                    <div class="brand-badge-icon">🎬</div>
+                    <span class="brand-name">WebReel</span>
+                </div>
+                <p>The autonomous AI website video generator. From URL to agency-grade 1080p video in 4 minutes.</p>
+            </div>
+            <div class="footer-links-col">
+                <h5>Architecture</h5>
+                <a href="/webreel_mindmap.html" target="_blank">Mindmap Blueprint</a>
+                <a href="/api/health" target="_blank">API Health Status</a>
+                <a href="/docs" target="_blank">FastAPI Docs</a>
+            </div>
+            <div class="footer-links-col">
+                <h5>Tech Stack</h5>
+                <span>Playwright Chromium</span>
+                <span>Google Gemini 2.0 Flash</span>
+                <span>FFmpeg Libx264</span>
+                <span>Google Cloud Run</span>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 WebReel. Built for founders, agencies and creators globally.</span>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

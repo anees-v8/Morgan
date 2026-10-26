@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebReel — Strategic & Technical Mindmap</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #07090e;
+            --bg-secondary: #0d111a;
+            --bg-card: rgba(18, 24, 38, 0.75);
+            --bg-card-hover: rgba(28, 38, 60, 0.85);
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(0, 240, 255, 0.4);
+            
+            --accent-what: #00f0ff;
+            --accent-why: #f43f5e;
+            --accent-how-tech: #a855f7;
+            --accent-how-biz: #10b981;
+            --accent-who: #f59e0b;
+            --accent-when: #3b82f6;
+
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-main);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .ambient-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 40%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            position: fixed;
+            top: 16px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            background: rgba(13, 17, 26, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #00f0ff, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        }
+
+        .brand-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 11px;
+            color: var(--text-dim);
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-box input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 8px 14px 8px 34px;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Space Grotesk', sans-serif;
+            width: 220px;
+            transition: all 0.2s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            width: 280px;
+            border-color: var(--accent-what);
+            background: rgba(0, 240, 255, 0.05);
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            font-size: 13px;
+            color: var(--text-dim);
+            pointer-events: none;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(0,0,0,0.3);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .filter-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            font-family: 'Space Grotesk', sans-serif;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .filter-btn.active {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .filter-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        #viewport {
+            position: absolute;
+            inset: 0;
+            cursor: grab;
+            z-index: 10;
+        }
+
+        #viewport:active {
+            cursor: grabbing;
+        }
+
+        svg#mindmap-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: auto;
+        }
+
+        .edge {
+            fill: none;
+            stroke-width: 2.5;
+            transition: stroke 0.3s, stroke-width 0.3s;
+            opacity: 0.65;
+        }
+
+        .edge.highlighted {
+            stroke-width: 4;
+            opacity: 1;
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+
+        .node-group {
+            cursor: pointer;
+            transition: transform 0.2s ease-out;
+        }
+
+        .node-group:hover {
+            filter: drop-shadow(0 0 16px rgba(0, 240, 255, 0.35));
+        }
+
+        .node-rect {
+            rx: 14;
+            ry: 14;
+            stroke-width: 1.5;
+            transition: all 0.25s ease;
+        }
+
+        .node-text-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            fill: #ffffff;
+            pointer-events: none;
+        }
+
+        .node-text-subtitle {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+            font-size: 11px;
+            fill: #94a3b8;
+            pointer-events: none;
+        }
+
+        .zoom-toolbar {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(13, 17, 26, 0.8);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 6px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .tool-btn {
+            width: 38px;
+            height: 38px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tool-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .drawer {
+            position: fixed;
+            top: 16px;
+            bottom: 16px;
+            right: -480px;
+            width: 440px;
+            background: rgba(13, 17, 26, 0.94);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            z-index: 200;
+            transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -15px 0 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+        }
+
+        .drawer.open {
+            right: 20px;
+        }
+
+        .drawer-header {
+            padding: 24px 24px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .drawer-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .drawer-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            line-height: 1.3;
+        }
+
+        .drawer-close {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-muted);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .drawer-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .drawer-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+            font-size: 14px;
+            line-height: 1.7;
+            color: #cbd5e1;
+        }
+
+        .drawer-body h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-dim);
+            margin: 20px 0 8px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .drawer-body h3:first-child {
+            margin-top: 0;
+        }
+
+        .drawer-body p {
+            margin-bottom: 14px;
+        }
+
+        .drawer-body ul {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 16px;
+        }
+
+        .drawer-body li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+        }
+
+        .drawer-body li::before {
+            content: "▹";
+            position: absolute;
+            left: 0;
+            color: var(--accent-what);
+        }
+
+        .stat-card-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .stat-card .val {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+
+        .code-box {
+            background: #05070a;
+            border: 1px solid var(--border-subtle);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: #38bdf8;
+            overflow-x: auto;
+            margin: 12px 0;
+            line-height: 1.5;
+        }
+
+        .legend {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(13, 17, 26, 0.8);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 8px 16px;
+            z-index: 100;
+            font-size: 11px;
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-muted);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-grid"></div>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon">🎬</div>
+            <div class="brand-text">
+                <h1>WebReel Interactive Mindmap</h1>
+                <p>Autonomous AI Website Video Generator · Full Architecture</p>
+            </div>
+        </div>
+
+        <div class="nav-controls">
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All Branches</button>
+                <button class="filter-btn" data-filter="what"><span class="filter-dot" style="background: var(--accent-what)"></span>What</button>
+                <button class="filter-btn" data-filter="why"><span class="filter-dot" style="background: var(--accent-why)"></span>Why</button>
+                <button class="filter-btn" data-filter="how-tech"><span class="filter-dot" style="background: var(--accent-how-tech)"></span>Tech How</button>
+                <button class="filter-btn" data-filter="how-biz"><span class="filter-dot" style="background: var(--accent-how-biz)"></span>Biz How</button>
+                <button class="filter-btn" data-filter="who"><span class="filter-dot" style="background: var(--accent-who)"></span>Who</button>
+                <button class="filter-btn" data-filter="when"><span class="filter-dot" style="background: var(--accent-when)"></span>Roadmap</button>
+            </div>
+
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search mindmap (e.g. Gemini, TAM, FFmpeg)...">
+            </div>
+        </div>
+    </header>
+
+    <div id="viewport">
+        <svg id="mindmap-svg">
+            <g id="canvas-group">
+                <g id="edges-layer"></g>
+                <g id="nodes-layer"></g>
+            </g>
+        </svg>
+    </div>
+
+    <!-- Zoom & Navigation Toolbar -->
+    <div class="zoom-toolbar">
+        <button class="tool-btn" id="zoomInBtn" title="Zoom In">＋</button>
+        <button class="tool-btn" id="zoomOutBtn" title="Zoom Out">−</button>
+        <button class="tool-btn" id="zoomResetBtn" title="Fit & Center">⛶</button>
+    </div>
+
+    <!-- Side Detail Drawer -->
+    <div class="drawer" id="sideDrawer">
+        <div class="drawer-header">
+            <div>
+                <span class="drawer-tag" id="drawerTag">CATEGORY</span>
+                <h2 id="drawerTitle">Node Title</h2>
+            </div>
+            <button class="drawer-close" id="drawerClose">✕</button>
+        </div>
+        <div class="drawer-body" id="drawerContent">
+            <!-- Injected dynamically -->
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-what)"></span> WHAT</div>
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-why)"></span> WHY</div>
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-how-tech)"></span> TECH HOW</div>
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-how-biz)"></span> BIZ HOW</div>
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-who)"></span> WHO</div>
+        <div class="legend-item"><span class="filter-dot" style="background: var(--accent-when)"></span> ROADMAP</div>
+    </div>
+
+    <script>
+        const mindmapData = {
+            id: 'root',
+            title: 'WebReel Engine',
+            subtitle: 'Autonomous AI Website Video Maker',
+            category: 'root',
+            color: '#ffffff',
+            summary: 'Single URL in -> AI Agent Navigates Chromium -> Multimodal Vision Analysis -> Voiceover & Cinematic 1080p Video -> 4 Min Output.',
+            details: {
+                overview: 'WebReel is the first end-to-end autonomous agent that captures live websites, interprets value propositions with vision AI, writes synchronized scripts, records real user interaction, and outputs high-production MP4 marketing videos without human involvement.',
+                stats: [{ val: '₹800/yr', lbl: 'Initial Run Cost' }, { val: '4 Mins', lbl: 'Average Generation' }, { val: '$11.2B', lbl: 'Addressable Market' }, { val: '100% Free', lbl: 'MVP Tech Stack' }],
+                bulletPoints: [
+                    'Zero Human in the Loop (URL in, video out)',
+                    'Real Chromium browser execution, not mockups',
+                    'Zero API cost MVP using Gemini 2.0 Flash + Neural TTS',
+                    'Built-in viral loop via watermark & shareable preview links'
+                ],
+                code: 'POST /api/v1/generate\n{\n  "domain": "https://stripe.com",\n  "style": "cinematic_saas",\n  "duration": 90\n}'
+            },
+            children: [
+                {
+                    id: 'what',
+                    title: 'WHAT: Product Scope',
+                    subtitle: 'Capabilities & Output Spec',
+                    category: 'what',
+                    color: '#00f0ff',
+                    summary: 'Complete automated pipeline producing 90s cinematic 1080p marketing & walkthrough videos.',
+                    details: {
+                        overview: 'What WebReel generates: An ultra-polished 90-second product demonstration video that feels like it cost $5,000 from an agency.',
+                        stats: [{ val: '1920x1080', lbl: 'Resolution (30fps)' }, { val: '90 Sec', lbl: 'Target Runtime' }, { val: 'H.264 / AAC', lbl: 'Universal Format' }, { val: '15-40 MB', lbl: 'Optimized Size' }],
+                        bulletPoints: [
+                            'Live Browser Exploration: Discovers features, pricing, about, product tours',
+                            'Real Interaction Recording: Clicks, hovers, scroll ripples, smooth zooms',
+                            'Multimodal Vision Analysis: Understands headlines, USP, layout, value props',
+                            'Narrator Scriptwriting: Timed, persuasive Apple-style product narration',
+                            'Cinematic Post-Production: Ken Burns (0-8%), crossfades, lower thirds, cursor trail'
+                        ],
+                        code: 'Video Template Breakdown:\n[0:00-0:05] Branded Intro (Favicon + Domain)\n[0:05-0:20] Homepage Hero (Ken Burns + Tagline)\n[0:20-0:55] Feature Walkthrough (3-4 Key Pages)\n[0:55-1:10] Pricing & Plans (Best Plan Glow)\n[1:10-1:20] Branded Outro & CTA'
+                    },
+                    children: [
+                        {
+                            id: 'what-not',
+                            title: 'What It Is NOT',
+                            subtitle: 'Defensive Positioning',
+                            category: 'what',
+                            color: '#00f0ff',
+                            summary: 'Not Loom (manual), not Canva (templates), not a basic chatbot or static slideshow.',
+                            details: {
+                                overview: 'Crucial for pitch clarity and market positioning: WebReel does NOT require a human to speak or click.',
+                                bulletPoints: [
+                                    'NOT a screen recorder (Loom/Screen Studio require human talent & takes)',
+                                    'NOT a template/slideshow maker (Canva looks fake and generic)',
+                                    'NOT an avatar talking head (Synthesia/HeyGen do not navigate web software)',
+                                    'NOT code-to-slide (unlike /brag, it renders live CSS/JS/WebGL in real Chromium)'
+                                ]
+                            }
+                        },
+                        {
+                            id: 'what-phases',
+                            title: 'Product Evolution',
+                            subtitle: '5 Product Phases',
+                            category: 'what',
+                            color: '#00f0ff',
+                            summary: 'From CLI/API engine to Self-serve Web App, Agency Platform, and Developer SDK.',
+                            details: {
+                                overview: 'Structured rollout allowing rapid monetization and PLG expansion.',
+                                bulletPoints: [
+                                    'Phase 1: WebReel Core (CLI / API engine & direct video generator)',
+                                    'Phase 2: WebReel Web App (Self-serve dashboard, queue management, player)',
+                                    'Phase 3: WebReel Business (Brand kits, custom voice clone, team seats)',
+                                    'Phase 4: WebReel API / SDK (Embed inside Notion, Webflow, Framer, HubSpot)',
+                                    'Phase 5: WebReel Enterprise (White-label, SSO, on-prem container, custom LLM)'
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'why',
+                    title: 'WHY: Market & Opportunity',
+                    subtitle: 'Problem, TAM & Unfair Advantage',
+                    category: 'why',
+                    color: '#f43f5e',
+                    summary: 'Explosive convergence of Agentic AI, Multimodal LLMs, and $11.2B B2B Video demand.',
+                    details: {
+                        overview: 'Every single SaaS and web business needs a demo video. Manual creation takes 3-8 hours or $500-$5,000 with video agencies. As websites update weekly, videos rot instantly.',
+                        stats: [{ val: '$11.2B', lbl: 'TAM 2025' }, { val: '31% CAGR', lbl: 'Growth Rate' }, { val: '$2.5B', lbl: 'SAM' }, { val: '$120M+', lbl: 'SOM Year 1-3' }],
+                        bulletPoints: [
+                            'Problem: Agency videos cost $500–$5,000 and take 2-3 weeks; DIY tools look cheap',
+                            'Problem: Software updates render previous demo videos obsolete instantly',
+                            'Why Now: Gemini 2.0 Flash vision allows instant visual reasoning across web UIs',
+                            'Why Now: Headless browser automation (Playwright) is rock solid',
+                            'Why Now: Neural TTS crossed the threshold of uncanny valley'
+                        ]
+                    },
+                    children: [
+                        {
+                            id: 'why-comp',
+                            title: 'Competitive White Space',
+                            subtitle: 'Zero Direct Competitors',
+                            category: 'why',
+                            color: '#f43f5e',
+                            summary: 'No tool exists that autonomously records live browsers and produces finished narrated video.',
+                            details: {
+                                overview: 'Competitors either lack browser automation (Synthesia, HeyGen) or lack AI autonomy (Loom, Screen Studio).',
+                                bulletPoints: [
+                                    'Loom: $975M exit to Atlassian — 100% manual recording required',
+                                    'Synthesia ($4B val, $150M ARR): Avatar talking heads, no website crawler',
+                                    'HeyGen ($500M val, $200M ARR): Video translation, no web agent',
+                                    'Supademo / Arcade ($14M): Interactive click-throughs, not downloadable video',
+                                    'Screen Studio: Beautiful screen capture, but requires human to perform it'
+                                ]
+                            }
+                        },
+                        {
+                            id: 'why-moat',
+                            title: 'Defensible Moats',
+                            subtitle: 'Flywheel & Integrations',
+                            category: 'why',
+                            color: '#f43f5e',
+                            summary: 'Data flywheel on high-converting demo patterns, brand assets lock-in, and CMS plugins.',
+                            details: {
+                                overview: 'How WebReel sustains market leadership once competitors take notice.',
+                                bulletPoints: [
+                                    'Data Flywheel: Every video run trains heuristics on what page sections captivate viewers',
+                                    'Integration Lock-in: First-to-market inside Webflow Marketplace, Framer, and HubSpot',
+                                    'Brand Kit Library: Users upload logos, custom hex codes, typography rules',
+                                    'Domain Specialization: Tailored directorial models for SaaS, E-commerce, Portfolios'
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'how-tech',
+                    title: 'HOW: Tech Architecture',
+                    subtitle: 'Zero-Budget Autonomous Stack',
+                    category: 'how-tech',
+                    color: '#a855f7',
+                    summary: 'Playwright + Gemini 2.0 Flash + Neural TTS + FFmpeg/MoviePy on Google Cloud Run + Vercel.',
+                    details: {
+                        overview: 'Architected to run on Rs.0 cloud costs until customer revenue or cloud credits arrive. Scalable, modular, microservice-ready.',
+                        stats: [{ val: 'Rs. 0', lbl: 'Cloud Hosting' }, { val: '1,500/day', lbl: 'Gemini Free Limit' }, { val: '100% Local', lbl: 'TTS & Video Assembly' }, { val: '10 GB', lbl: 'Free Cloudflare R2' }],
+                        bulletPoints: [
+                            'Browser Worker: Playwright Chromium with anti-bot stealth emulation',
+                            'AI Directorial Engine: Gemini 2.0 Flash picks key pages and creates timed scripts',
+                            'Audio Synthesis: Studio Neural Voiceover with FFmpeg auto-ducking (voice 100%, music 8%)',
+                            'Video Compositor: Ken Burns zoompan, click ripples, lower-thirds, H.264 yuv420p',
+                            'Zero Cost Infrastructure: Vercel (Web), Cloud Run (FastAPI), Supabase (DB), R2 (Storage)'
+                        ],
+                        code: 'Stack Overview:\n├── Frontend: Next.js 14 / Vanilla SPA on Vercel (Hobby Free)\n├── API: FastAPI on Google Cloud Run (Always Free 2M req/mo)\n├── Worker: Docker (Chromium + FFmpeg + Neural TTS)\n├── Database: Supabase PostgreSQL (500MB free)\n└── Storage: Cloudflare R2 (10GB free, 0 egress fees)'
+                    },
+                    children: [
+                        {
+                            id: 'how-engine',
+                            title: 'Core Engine Pipeline',
+                            subtitle: '6-Stage URL -> MP4 Flow',
+                            category: 'how-tech',
+                            color: '#a855f7',
+                            summary: 'Crawl -> Direct -> Capture -> Script -> Voiceover -> Composite.',
+                            details: {
+                                overview: 'The internal execution flow that runs when a URL is submitted.',
+                                bulletPoints: [
+                                    'Stage 1: Stealth Crawler opens URL, builds link graph, extracts favicon & brand colors',
+                                    'Stage 2: Director LLM evaluates homepage and selects top 4-6 pages (avoiding login/legal)',
+                                    'Stage 3: Recorder agent captures 1920x1080 viewport frames, element positions, click targets',
+                                    'Stage 4: Vision Analyzer & Scriptwriter crafts 90-second synchronized narration',
+                                    'Stage 5: Neural TTS generates audio tracks, FFmpeg ducks ambient background music',
+                                    'Stage 6: Video compositor applies Ken Burns, lower thirds, transitions, renders MP4'
+                                ]
+                            }
+                        },
+                        {
+                            id: 'how-hosting',
+                            title: 'Zero-Cost Cloud Topology',
+                            subtitle: 'Run for Rs.800/year (Domain Only)',
+                            category: 'how-tech',
+                            color: '#a855f7',
+                            summary: 'Maximizing free tiers of Google Cloud Run, Cloudflare R2, Supabase, and Vercel.',
+                            details: {
+                                overview: 'Total monthly outlay is Rs. 0. Only expenditure is ~Rs.800 for webreel.in domain.',
+                                bulletPoints: [
+                                    'Vercel Hobby: 100GB monthly bandwidth, global edge CDN',
+                                    'Google Cloud Run: 2 million requests, 180,000 vCPU-seconds free per month',
+                                    'Cloudflare R2: 10GB storage with ZERO egress charges (crucial for video hosting)',
+                                    'Supabase: 500MB PostgreSQL database + 50,000 monthly active users auth',
+                                    'Gemini 2.0 Flash: 15 Requests Per Minute, 1,500 Requests Per Day free'
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'how-biz',
+                    title: 'HOW: Business & Growth',
+                    subtitle: 'PLG, Pricing & Viral Loops',
+                    category: 'how-biz',
+                    color: '#10b981',
+                    summary: 'Loom-style watermark growth, $29-$299 pricing, $450K cloud credits & YC roadmap.',
+                    details: {
+                        overview: 'How WebReel acquires users organically, converts them to high-retention paid plans, and scales to $1M ARR in 12 months.',
+                        stats: [{ val: '$980K', lbl: 'Year 1 Target ARR' }, { val: '$29/mo', lbl: 'Pro Plan' }, { val: '$299/mo', lbl: 'Agency Plan' }, { val: '$450K+', lbl: 'Cloud Credits Target' }],
+                        bulletPoints: [
+                            'Free Tier Viral Hook: 3 videos/mo with "Generated by WebReel" watermark',
+                            'Outreach Demo Campaign: Cold emailing 500 founders with ready-made video of THEIR product',
+                            'Social Strategy: 30-second live Twitter demos tagging famous SaaS founders',
+                            'Pricing Tiers: Pro ($29/mo, 15 vids), Business ($79/mo, 50 vids), Agency ($299/mo, unltd)',
+                            'Non-Dilutive Funding: Google ($200K), Microsoft ($150K), AWS ($100K) credits'
+                        ]
+                    },
+                    children: [
+                        {
+                            id: 'biz-pricing',
+                            title: 'Pricing & Unit Economics',
+                            subtitle: 'High Margin Subscription',
+                            category: 'how-biz',
+                            color: '#10b981',
+                            summary: 'Free ($0) -> Pro ($29) -> Business ($79) -> Agency ($299) -> Enterprise ($1K-$5K).',
+                            details: {
+                                overview: 'Because WebReel uses local/free-tier execution, gross margins exceed 85%.',
+                                bulletPoints: [
+                                    'Free Plan: $0/mo — 3 videos/mo, 720p, watermark (viral engine)',
+                                    'Pro Plan: $29/mo — 15 videos/mo, 1080p, no watermark, voice selector',
+                                    'Business: $79/mo — 50 videos/mo, 4K, brand kits, 3 team seats',
+                                    'Agency: $299/mo — Unlimited videos, white-label client portals, 10 seats',
+                                    'Year 1 Projection: 800 Pro + 250 Biz + 80 Agency + 5 Enterprise = ~$980K ARR'
+                                ]
+                            }
+                        },
+                        {
+                            id: 'biz-funding',
+                            title: 'Cloud Credits & YC Path',
+                            subtitle: 'Funding Playbook',
+                            category: 'how-biz',
+                            color: '#10b981',
+                            summary: 'Apply to Google, AWS, Microsoft for $450K; pitch YC S25/W26 with live demo.',
+                            details: {
+                                overview: 'Zero-equity non-dilutive credit runway followed by top accelerator backing.',
+                                bulletPoints: [
+                                    'Google for Startups: $200,000 Cloud credits (apply week 1)',
+                                    'Microsoft for Startups: $150,000 Azure credits (Founders Hub)',
+                                    'AWS Activate: $100,000 AWS compute credits',
+                                    'Startup India DPIIT: 3 years 0% income tax & government AI grant eligibility',
+                                    'YC Application: Demo video IS the pitch (YC backed browser-use, loves agentic AI)'
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'who',
+                    title: 'WHO: Target Customers',
+                    subtitle: '3 Primary Personas',
+                    category: 'who',
+                    color: '#f59e0b',
+                    summary: 'SaaS Founders & PMMs (Tier 1), Marketing Agencies (Tier 2), Indie Hackers (Tier 3).',
+                    details: {
+                        overview: 'Clear focus on high willingness to pay: teams that already spend $500–$5,000 on video production.',
+                        stats: [{ val: '2.1 Million', lbl: 'SaaS PMMs Globally' }, { val: '330,000', lbl: 'Digital Agencies' }, { val: '59 Million', lbl: 'Freelancers/Indies' }, { val: 'High', lbl: 'Purchase Intent' }],
+                        bulletPoints: [
+                            'Tier 1 (SaaS PMMs): Pain is outdated videos every sprint; buys Pro/Business immediately',
+                            'Tier 2 (Agencies): Pain is client video production hours; resells WebReel videos at 5x-10x markup',
+                            'Tier 3 (Indie Hackers): Pain is zero video skills for Product Hunt launch; drives organic viral loop',
+                            'Secondary: VC Pitch decks, SDR personalized outreach, E-commerce store tours'
+                        ]
+                    },
+                    children: [
+                        {
+                            id: 'who-personas',
+                            title: 'Customer Personas',
+                            subtitle: 'Maya, Ravi & Carlos',
+                            category: 'who',
+                            color: '#f59e0b',
+                            summary: 'Detailed profiles of our core champions across Growth, Agency, and Indie.',
+                            details: {
+                                overview: 'Who signs up, what triggers their purchase, and how they refer others.',
+                                bulletPoints: [
+                                    'Maya (Head of Growth, B2B SaaS): Needs fresh monthly videos without video agency. Pays $79/mo.',
+                                    'Ravi (Owner, Digital Marketing Agency): Bundles site walkthroughs for 20 clients. Pays $299/mo.',
+                                    'Carlos (Indie Hacker): Launches on Product Hunt, needs launch video in 4 mins. Pays $29 to remove watermark.'
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    id: 'when',
+                    title: 'WHEN: Execution Sprint',
+                    subtitle: '28-Day Build to Launch',
+                    category: 'when',
+                    color: '#3b82f6',
+                    summary: 'Week 1 Core Engine -> Week 2 Intelligence -> Week 3 Web UI & Cloud -> Week 4 Launch.',
+                    details: {
+                        overview: 'Structured 4-week sprint taking WebReel from blank workspace to live Product Hunt launch.',
+                        stats: [{ val: 'Day 1-7', lbl: 'Engine & Video' }, { val: 'Day 8-14', lbl: 'AI Intelligence' }, { val: 'Day 15-21', lbl: 'API & Web App' }, { val: 'Day 22-28', lbl: 'Demos & Launch' }],
+                        bulletPoints: [
+                            'Week 1: Playwright crawler + Gemini API + MoviePy/FFmpeg assembly + TTS sync',
+                            'Week 2: Director agent + cursor ripples + Ken Burns + lower thirds + music ducking',
+                            'Week 3: FastAPI endpoints + Supabase jobs + Cloudflare R2 + Next.js/Web frontend',
+                            'Week 4: 5 flagship demo videos (Stripe, Notion, Linear, Vercel, Figma) + Twitter/HN launch'
+                        ]
+                    }
+                }
+            ]
+        };
+
+        const svg = document.getElementById('mindmap-svg');
+        const canvasGroup = document.getElementById('canvas-group');
+        const edgesLayer = document.getElementById('edges-layer');
+        const nodesLayer = document.getElementById('nodes-layer');
+
+        let zoomLevel = 0.95;
+        let panX = window.innerWidth / 2;
+        let panY = window.innerHeight / 2;
+        let isDragging = false;
+        let startX, startY;
+
+        function computeLayout(root) {
+            root.x = 0;
+            root.y = 0;
+            root.width = 240;
+            root.height = 70;
+
+            const mainBranches = root.children;
+            const branchAngleStep = (2 * Math.PI) / mainBranches.length;
+            const branchDist = 340;
+
+            mainBranches.forEach((b, i) => {
+                const angle = i * branchAngleStep - Math.PI / 2;
+                b.x = Math.cos(angle) * branchDist;
+                b.y = Math.sin(angle) * branchDist;
+                b.width = 220;
+                b.height = 64;
+
+                if (b.children) {
+                    const subAngleSpread = 0.55;
+                    const subDist = 260;
+                    const count = b.children.length;
+                    b.children.forEach((sub, j) => {
+                        const subAngle = angle + (j - (count - 1) / 2) * subAngleSpread;
+                        sub.x = b.x + Math.cos(subAngle) * subDist;
+                        sub.y = b.y + Math.sin(subAngle) * subDist;
+                        sub.width = 200;
+                        sub.height = 58;
+                    });
+                }
+            });
+        }
+
+        computeLayout(mindmapData);
+
+        function renderMindmap() {
+            edgesLayer.innerHTML = '';
+            nodesLayer.innerHTML = '';
+
+            function drawSubtree(parent) {
+                if (!parent.children) return;
+
+                parent.children.forEach(child => {
+                    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                    const dx = child.x - parent.x;
+                    const dy = child.y - parent.y;
+                    const cx1 = parent.x + dx * 0.5;
+                    const cy1 = parent.y;
+                    const cx2 = parent.x + dx * 0.5;
+                    const cy2 = child.y;
+
+                    const d = `M ${parent.x} ${parent.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${child.x} ${child.y}`;
+                    path.setAttribute('d', d);
+                    path.setAttribute('class', 'edge');
+                    path.setAttribute('stroke', child.color || '#a855f7');
+                    path.setAttribute('id', `edge-${child.id}`);
+                    edgesLayer.appendChild(path);
+
+                    drawSubtree(child);
+                });
+            }
+
+            drawSubtree(mindmapData);
+
+            function drawNodes(node) {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'node-group');
+                g.setAttribute('id', `node-${node.id}`);
+                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', -node.width / 2);
+                rect.setAttribute('y', -node.height / 2);
+                rect.setAttribute('width', node.width);
+                rect.setAttribute('height', node.height);
+                rect.setAttribute('class', 'node-rect');
+                rect.setAttribute('fill', node.category === 'root' ? 'rgba(30, 41, 59, 0.95)' : 'rgba(15, 23, 42, 0.88)');
+                rect.setAttribute('stroke', node.color || '#00f0ff');
+                g.appendChild(rect);
+
+                const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                dot.setAttribute('cx', -node.width / 2 + 18);
+                dot.setAttribute('cy', -node.height / 2 + 20);
+                dot.setAttribute('r', 4);
+                dot.setAttribute('fill', node.color || '#00f0ff');
+                g.appendChild(dot);
+
+                const textTitle = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textTitle.setAttribute('x', -node.width / 2 + 30);
+                textTitle.setAttribute('y', -node.height / 2 + 24);
+                textTitle.setAttribute('class', 'node-text-title');
+                textTitle.textContent = node.title;
+                g.appendChild(textTitle);
+
+                const textSub = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                textSub.setAttribute('x', -node.width / 2 + 30);
+                textSub.setAttribute('y', -node.height / 2 + 42);
+                textSub.setAttribute('class', 'node-text-subtitle');
+                textSub.textContent = node.subtitle;
+                g.appendChild(textSub);
+
+                g.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openDrawer(node);
+                    highlightBranch(node);
+                });
+
+                nodesLayer.appendChild(g);
+
+                if (node.children) {
+                    node.children.forEach(c => drawNodes(c));
+                }
+            }
+
+            drawNodes(mindmapData);
+            updateTransform();
+        }
+
+        function updateTransform() {
+            canvasGroup.setAttribute('transform', `translate(${panX}, ${panY}) scale(${zoomLevel})`);
+        }
+
+        const viewport = document.getElementById('viewport');
+
+        viewport.addEventListener('mousedown', (e) => {
+            if (e.target.closest('.node-group')) return;
+            isDragging = true;
+            startX = e.clientX - panX;
+            startY = e.clientY - panY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            panX = e.clientX - startX;
+            panY = e.clientY - startY;
+            updateTransform();
+        });
+
+        window.addEventListener('mouseup', () => { isDragging = false; });
+
+        viewport.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+            const newZoom = Math.min(Math.max(zoomLevel * zoomFactor, 0.4), 2.5);
+
+            const mouseX = e.clientX - panX;
+            const mouseY = e.clientY - panY;
+            panX -= mouseX * (newZoom / zoomLevel - 1);
+            panY -= mouseY * (newZoom / zoomLevel - 1);
+
+            zoomLevel = newZoom;
+            updateTransform();
+        });
+
+        document.getElementById('zoomInBtn').onclick = () => { zoomLevel = Math.min(zoomLevel * 1.2, 2.5); updateTransform(); };
+        document.getElementById('zoomOutBtn').onclick = () => { zoomLevel = Math.max(zoomLevel / 1.2, 0.4); updateTransform(); };
+        document.getElementById('zoomResetBtn').onclick = () => {
+            zoomLevel = 0.95;
+            panX = window.innerWidth / 2;
+            panY = window.innerHeight / 2;
+            updateTransform();
+        };
+
+        const sideDrawer = document.getElementById('sideDrawer');
+        const drawerTitle = document.getElementById('drawerTitle');
+        const drawerTag = document.getElementById('drawerTag');
+        const drawerContent = document.getElementById('drawerContent');
+        const drawerClose = document.getElementById('drawerClose');
+
+        function openDrawer(node) {
+            drawerTag.textContent = (node.category || 'INFO').toUpperCase();
+            drawerTag.style.background = `${node.color}22`;
+            drawerTag.style.color = node.color;
+            drawerTag.style.border = `1px solid ${node.color}44`;
+
+            drawerTitle.textContent = node.title;
+
+            let html = `<p style="font-size:15px; color:#f1f5f9; margin-bottom:18px;"><strong>${node.summary}</strong></p>`;
+            
+            if (node.details.overview) {
+                html += `<h3>Strategic Blueprint</h3><p>${node.details.overview}</p>`;
+            }
+
+            if (node.details.stats) {
+                html += '<div class="stat-card-row">';
+                node.details.stats.forEach(s => {
+                    html += `<div class="stat-card"><div class="val">${s.val}</div><div class="lbl">${s.lbl}</div></div>`;
+                });
+                html += '</div>';
+            }
+
+            if (node.details.bulletPoints) {
+                html += '<h3>Operational Execution</h3><ul>';
+                node.details.bulletPoints.forEach(bp => {
+                    html += `<li>${bp}</li>`;
+                });
+                html += '</ul>';
+            }
+
+            if (node.details.code) {
+                html += `<h3>Architecture Spec</h3><pre class="code-box"><code>${node.details.code}</code></pre>`;
+            }
+
+            drawerContent.innerHTML = html;
+            sideDrawer.classList.add('open');
+        }
+
+        drawerClose.onclick = () => { sideDrawer.classList.remove('open'); };
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filter = btn.dataset.filter;
+
+                document.querySelectorAll('.node-group').forEach(g => {
+                    const id = g.id.replace('node-', '');
+                    if (filter === 'all' || id === 'root' || id.startsWith(filter)) {
+                        g.style.opacity = '1';
+                        g.style.pointerEvents = 'auto';
+                    } else {
+                        g.style.opacity = '0.15';
+                        g.style.pointerEvents = 'none';
+                    }
+                });
+
+                document.querySelectorAll('.edge').forEach(e => {
+                    const id = e.id.replace('edge-', '');
+                    if (filter === 'all' || id.startsWith(filter)) {
+                        e.style.opacity = '0.65';
+                    } else {
+                        e.style.opacity = '0.08';
+                    }
+                });
+            };
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            if (!query) {
+                document.querySelectorAll('.node-group').forEach(g => g.style.opacity = '1');
+                document.querySelectorAll('.edge').forEach(e => e.style.opacity = '0.65');
+                return;
+            }
+
+            document.querySelectorAll('.node-group').forEach(g => {
+                const text = g.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    g.style.opacity = '1';
+                    g.querySelector('.node-rect').setAttribute('stroke', '#00f0ff');
+                    g.querySelector('.node-rect').setAttribute('stroke-width', '3');
+                } else {
+                    g.style.opacity = '0.2';
+                    g.querySelector('.node-rect').setAttribute('stroke-width', '1.5');
+                }
+            });
+        });
+
+        function highlightBranch(node) {
+            document.querySelectorAll('.edge').forEach(e => e.classList.remove('highlighted'));
+            const edge = document.getElementById(`edge-${node.id}`);
+            if (edge) edge.classList.add('highlighted');
+        }
+
+        renderMindmap();
+    </script>
+</body>
+</html>
